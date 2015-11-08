@@ -11,7 +11,7 @@
 #define MAXLINES 5000
 char *lineptr[MAXLINES];
 
-int readlines(char *lineptr[], int maxlines);
+int readlines(char *lineptr[], int maxlines, int n);
 void writelines(char *lineptr[], int nlines, int n);
 int main(int argc, char *argv[])
 {
@@ -20,34 +20,40 @@ int main(int argc, char *argv[])
     {
         for (i = 1, n = 0; isdigit(argv[1][i]); i++) 
             n = n * 10 + argv[1][i] - '0';
-        if ((nlines = readlines(lineptr, MAXLINES)) >= 0)
+        for (i = 1; !isdigit(argv[1][i]) && argv[1][i] != '\0'; i++)
+            n = -1;
+        if ((nlines = readlines(lineptr, MAXLINES, n)) >= 0)
             writelines(lineptr, nlines, n);
         else
-            printf("Your input has been boomed !!!!!");
+            printf("Silly B !!!");
         return 0;
     }
     else{
-        printf("Error.");
+        printf("Silly B !!!");
         return -1;
     }
 }
 #define MAXLEN 1000
 char *alloc(int);
 int gtline(char s[], int lim);
-int readlines(char *lineptr[], int maxlines)
+int readlines(char *lineptr[], int maxlines, int n)
 {
     int len, nlines;
     char *p, line[MAXLEN];
-    nlines = 0;
-    while ((len = gtline(line, MAXLEN)) > 0)
-        if (nlines >= maxlines || (p = alloc(len)) == NULL)
-            return -1;
-        else {
-            line[len - 1] = '\0';
-            strcpy(p, line);
-            lineptr[nlines++] = p;
-        }
-    return nlines;
+    if (n <= 0)
+        return -1;
+    else{
+        nlines = 0;
+        while ((len = gtline(line, MAXLEN)) > 0)
+            if (nlines >= maxlines || (p = alloc(len)) == NULL)
+                return -1;
+            else {
+                line[len - 1] = '\0';
+                strcpy(p, line);
+                lineptr[nlines++] = p;
+            }
+            return nlines;
+    }
 }
 
 int gtline(char s[],int lim)
