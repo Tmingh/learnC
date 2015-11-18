@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 struct heapnode{
     int num;
     int key;
@@ -15,6 +16,7 @@ struct heapnode{
 };
 
 int i = 0;
+int n;
 void createheap(struct heapnode * head);
 struct heapnode * find(int key, struct heapnode *head)
 {
@@ -29,7 +31,7 @@ struct heapnode *num_find(int num, struct heapnode *head)
     struct heapnode *p;
     p = head;
     while (p->next != NULL && p->next->num != num)
-        p->next;
+        p = p->next;
     return p;
 }
 struct heapnode * createtree()
@@ -43,9 +45,7 @@ struct heapnode * createtree()
     printf("输入多个数字以建立二叉堆:\n");
     do{
         scanf("%d", &a[i++]);
-        printf ("6666666\n");
     }while(getchar() != '\n');
-    printf(">>>input working\n");
     while (temp < i){
         p1 = (struct heapnode *)malloc(sizeof(struct heapnode));
         if (head->next == NULL)
@@ -58,26 +58,23 @@ struct heapnode * createtree()
         p2 = p1;
         temp++;
     }
-    printf(">>>while working\n");
     return head;
 }
 void createheap(struct heapnode * head)
 {
-    int n, m;
+    int m, q;
     int temp;
     int *swap1,*swap2;
     struct heapnode *p1, *p2;
     m = i;
     for (n = 1; pow (2, n) <= m; n++)
         ;
-    printf(">>>first for working\n");
-    for( ; n > 0; n--){
+    q = n;
+    for( ; q > 0; q--){
         m = i;
         while (m > 1)
         {
-            printf(">>>2333\n");
             p1 = find(m, head);
-            printf(">>>456\n");
             p2 = find(m/2, head);
             swap1 = &(p1->next->num);
             swap2 = &(p2->next->num);
@@ -87,11 +84,8 @@ void createheap(struct heapnode * head)
                 *swap2 = temp;
             }
             m--;
-            printf(">>>while\n");
         }
-        printf(">>>while working\n");
     }
-    printf(">>>second for working\n");
 }
 void insert(struct heapnode *head)
 {
@@ -107,7 +101,6 @@ void insert(struct heapnode *head)
         ins_node->next = NULL;
         end->next = ins_node;
         createheap(head);
-        printf(">>>zxc\n");
         printf("输入下一个插入的数字(输入其他字符以结束):");
     }
     printf("插入结束");
@@ -115,7 +108,7 @@ void insert(struct heapnode *head)
 void deleted(struct heapnode *head)
 {
     int del_ele;
-    struct heapnode *targetbe, *new_struct, *emtybe;
+    struct heapnode *targetbe, *p, *emtybe, *temp;
     printf("输入你想删除的数字(输入其他字符以结束):");
     while ((scanf("%d", &del_ele)) == 1)
     {
@@ -123,45 +116,46 @@ void deleted(struct heapnode *head)
         if (targetbe->next == NULL)
             printf("无此数字!");
         else{
-            new_struct = (struct heapnode *)malloc(sizeof(struct heapnode));
-            new_struct->key = targetbe->next->key;
-            new_struct->next = targetbe->next->next;
-            new_struct->num = 65536;
-            targetbe->next = new_struct;
+            p = targetbe->next;
+            while (p->next != NULL){
+                p = p->next;
+                p->key = p->key - 1;
+            }
+            temp = targetbe->next;
+            targetbe->next = targetbe->next->next;
+            free(temp);
+            i--;
             createheap(head);
-            --i;
-            emtybe = find(i+1, head);
-            free(emtybe->next);
-            emtybe->next = NULL;
             printf("输入下一个删除的数字(输入其他字符以结束):");
         }
+    }
+}
+void print(struct heapnode *head)
+{
+    int i, j;
+    for (i = 0; i < n; i++){
+        for (j = 1; j <= pow(2, i); j++){
+            head = head->next;
+            if (head == NULL)
+                break;
+            printf("%6d", head->num);
+        }
+        putchar('\n');
     }
 }
 int main(void)
 {
     char ch;
-    struct heapnode *head, *print;
+    struct heapnode *head;
     head = createtree();
-    printf(">>>createtree working\n");
     createheap(head);
-    printf("%d", i);
-    printf(">>>createheap working\n");
     printf("你需要插入或删除一个数字吗？(i/d/others)\n");
-    while (getchar() != '\n')
-        continue;
     if((ch=getchar()) == 'i' || ch == 'I'){
         insert(head);
-        printf(">>>insert working\n");
     }
     else if (ch == 'd' || ch == 'D'){
         deleted(head);
-        printf(">>>deleted working\n");
     }
-    print = head->next;
-    while (print != NULL)
-    {
-        printf("%d\n", print->num);
-        print = print->next;
-    }
+    print(head);
     return 0;
 }

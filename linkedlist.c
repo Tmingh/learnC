@@ -7,11 +7,11 @@ struct weapon{
     int atk;
     struct weapon *next;
 };
-
 void deleted (struct weapon *);
 void insert(struct weapon *);
 int main(void)
 {
+    int flag;
     struct weapon *head;
     struct weapon *p1, *p2;
     char input[SIZE], ch;
@@ -28,9 +28,15 @@ int main(void)
         p1->next = NULL;
         strcpy(p1->name, input);
         puts("输入武器的攻击力:");
-        scanf("%d",&p1->atk);
+        flag = scanf("%d",&p1->atk);
         while (getchar() != '\n')
             continue;
+        while (flag != 1){
+            printf("输入错误，请输入一个数字:");
+            flag = scanf("%d", &p1->atk);
+            while (getchar() != '\n')
+                continue;
+        }
         puts("输入下一个武器名(输入空的名字以结束):");
         p2 = p1;
     }
